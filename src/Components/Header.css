@@ -1,0 +1,66 @@
+*{
+    font-family: sans-serif;
+    margin: 0;
+}
+.navbar {
+    margin: 30px;
+    padding: 30px;
+    background: #fff;    
+}
+.list {  
+    color: yellow;
+}
+
+
+.brand, .list_item {
+
+}
+
+.btn {
+    background: rgba(242, 116, 87, 1) !important;
+    border: none;
+    outline: none;
+    cursor: pointer; 
+    border-radius: 13px;
+}
+.btn :hover {
+    background: #fff;
+    cursor: pointer; 
+    
+}
+/* @import url('https://fonts.googleapis.com/css2?family=Questrial');
+* {
+    margin: 0;
+    font-family: "Questrial" cursive;
+}
+
+.Container {
+    margin-top: 30px;   
+}
+
+.Container .Logo {
+
+}
+
+.Container .Links {
+    margin-left: 270px; 
+    margin-top: -40px; 
+}
+
+.Container .Ul {
+    gap: 0px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.Container .Button {
+    margin-left: 200px;
+    padding: 10px 20px;
+    color: #fff;
+    border: none;
+    outline: none;
+    background:  rgba(242, 116, 87, 1);
+    cursor: pointer; 
+    border-radius: 10px;  
+    
+} */
