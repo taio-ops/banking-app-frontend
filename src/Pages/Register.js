@@ -1,12 +1,16 @@
 import React, { useRef,useState, useEffect} from 'react';
-import Header from '../Components/Header';
-import Footer from '../Components/Footer';
+// import Header from '../Components/Header';
+// import Footer from '../Components/Footer';
 import { faCheck, faTimes, faInfoCircle} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import axios from '../api/axios';
+import axiosClient from '../api/axiosClient';
+import axios from "axios";
 import { Link } from "react-router-dom";
+import { useStateContext } from "../Contexts/ContextProvider";
+
 
 import "./Register.css";
+
 
 // import Badge from 'react-bootstrap/Badge';
 
@@ -14,7 +18,7 @@ const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const PHONE_REGEX = /^0[789][01]\d{8}$|^\+234[789][01]\d{8}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const REGISTER_URL = '/register';
+
 
 
 
@@ -45,6 +49,8 @@ function Register() {
 
   const [errMsg, setErrMsg] = useState('');
   const [success, setSuccess] = useState(false);
+
+  const {setUser, setToken} = useStateContext();
 
   useEffect(() => {
     userRef.current.focus();
@@ -82,38 +88,58 @@ const handleSubmit = async (e) => {
       setErrMsg("Invalid Entry");
       return;
   }
-  try {
-    const response = await axios.post(REGISTER_URL,
+  axiosClient.post("/register",
       JSON.stringify({ name, email, phone_number, password }),
       {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: false
       }
-  );
-   // TODO: remove console.logs before deployment
-   console.log(JSON.stringify(response?.data));
-   //console.log(JSON.stringify(response))
-   setSuccess(true);
-   //clear state and controlled inputs
-   setName('');
-   setPhoneNumber('');
-   setEmail('');
-   setPwd('');
-   setMatchPwd('');
-  } catch (err) { 
-    if (!err?.response) {
-      setErrMsg('No Server Response');
-  } else if (err.response?.status === 409) {
-      setErrMsg('Username Taken');
-  } else {
-      setErrMsg('Registration Failed')
-  }
-  errRef.current.focus();
+      .then(({data})=>{
+        setUser(data.user);
+        setToken(data.token);
+        // console.log(JSON.stringify(response?.data));
+           //console.log(JSON.stringify(response))
+           setSuccess(true);
+           //clear state and controlled inputs
+           setName('');
+           setPhoneNumber('');
+           setEmail('');
+           setPwd('');
+           setMatchPwd('');
+}).catch(err => {
+    const response = err.response;
+    if(response && response.status === 422){
+        console.log(response.data.errors);
+    }
+    errRef.current.focus();
+  })
+)}
+//   );
+//    // TODO: remove console.logs before deployment
+//    console.log(JSON.stringify(response?.data));
+//    //console.log(JSON.stringify(response))
+//    setSuccess(true);
+//    //clear state and controlled inputs
+//    setName('');
+//    setPhoneNumber('');
+//    setEmail('');
+//    setPwd('');
+//    setMatchPwd('');
+//   } catch (err) { 
+//     if (!err?.response) {
+//       setErrMsg('No Server Response');
+//   } else if (err.response?.status === 409) {
+//       setErrMsg('Username Taken');
+//   } else {
+//       setErrMsg('Registration Failed')
+//   }
+//   errRef.current.focus();
 
-  }
+//   }
 
-}
+// }
   return (
+    
     <>
     {success ? (
       <section>
