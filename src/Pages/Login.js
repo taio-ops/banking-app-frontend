@@ -1,14 +1,19 @@
-import { useRef, useState, useEffect, useContext } from 'react';
-import AuthContext from '../Contexts/ContextProvider';
+import { useRef, useState, useEffect } from 'react';
+import useAuth from '../hooks/useAuth';
+// import Cookies from 'js-cookie';
 
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 
-import axios from '../api/axiosClient';
+import axios from '../api/axios';
 const LOGIN_URL = '/login';
 
 function Login() {
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    // const from = location.state?.from?.pathname || '/';
 
     const userRef = useRef();
     const errRef = useRef();
@@ -16,7 +21,6 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errMsg, setErrMsg] = useState('');
-    const [success, setSuccess] = useState(false);
 
 
     useEffect(() => {
@@ -36,18 +40,20 @@ function Login() {
                 JSON.stringify({ email, password }),
                 {
                     headers: { 'Content-Type': 'application/json' },
-                    withCredentials: false
+                    withCredentials: true
                 }
             );
             console.log(JSON.stringify(response?.data));
             //console.log(JSON.stringify(response));
             const accessToken = response?.data?.token;
+            // Cookies.set('token', accessToken, { expires: 7, secure: true, sameSite: 'none' });
            
-            setAuth({ email, password, token });
+            setAuth({ email, password, accessToken });
             setEmail('');
             setPassword('');
-            setSuccess(true)
-            // navigate(from, { replace: true });
+            navigate('/users', { replace: true });
+            localStorage.setItem('userInfo', JSON.stringify(response));
+            
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
@@ -63,16 +69,7 @@ function Login() {
     }
 
   return (
-    <>
-     {success ? (
-      <section>
-          <h1>You're logged in</h1>
-          <br />
-          <p>
-              <a href="#">Go to Home</a>
-          </p>
-      </section>
-  ) : (
+
     <section>
         <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
         <h1>Sign In</h1>
@@ -105,9 +102,10 @@ function Login() {
                 </span>
             </p>
     </section>
-     )}
-  </>
-  )
+    )
 }
+  
+  
+
 
 export default Login
